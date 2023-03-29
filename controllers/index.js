@@ -5,12 +5,3 @@ module.exports={
     categoriesController:require('./categories'),
     authorsController
 }
-
-
-
-
-
-
-module.exports = {
-    
-}
