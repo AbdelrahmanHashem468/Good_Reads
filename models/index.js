@@ -1,13 +1,3 @@
+const Categories=require('./Categories');
 
-
-
-
-
-
-
-
-
-
-module.exports = {
-    
-}
+module.exports = {Categories};

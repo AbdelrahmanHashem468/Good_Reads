@@ -1,13 +1,10 @@
 
 
-
-
-
-
-
-
-
-
-module.exports = {
-    
+module.exports={
+    categoriesController:require('./categories'),
 }
+
+
+
+
+
