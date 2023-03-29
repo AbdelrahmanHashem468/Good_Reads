@@ -1,4 +1,6 @@
-const User = require('./user');
+const User = require('./User');
+const Categories=require('./Categories');
+const Authors = require('./Authors')
 
 
 
@@ -8,5 +10,7 @@ const User = require('./user');
 
 
 module.exports = {
+    Authors,
+    Categories,
     User
 }
