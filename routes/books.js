@@ -23,4 +23,20 @@ router.delete('/:id', async (req, res, next) => {
     res.status(200).json({ message: "deleted success"});
 })
 
+router.patch('/:id', async (req,res,next) => {
+    const {name, categoryId, authorId} = req.body;
+    const { id } = req.params;
+    const photo = req.file ? `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}` : undefined;
+    const url = `${req.protocol}://${req.headers.host}/`
+    const [err, data] = await asycnWrapper(booksController.update({_id:id},{ name, photo, categoryId, authorId}, url))
+    if (err) return next(err);
+    res.status(200).json({ message: "success", book: data });
+
+})
+
+router.get('/', async (req, res, next) => {
+const [err, data] = await asycnWrapper(booksController.getBooks())
+if (err) return next(err);
+res.status(200).json(data);
+})
 module.exports = router
