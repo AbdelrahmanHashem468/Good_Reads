@@ -1,7 +1,10 @@
 const router =require('express').Router();
 const{categoriesController}=require('../controllers')
+const { auth, isAdmin } =require('../middlewares')
 
 
+router.use(auth);
+router.use(isAdmin);
 
 router.post('/',async (req,res,next)=>{
  const{body:{Name}}=req;

@@ -1,8 +1,12 @@
 const express = require('express');
 const { authorsController } = require('../controllers');
 const router = express.Router();
-const { asycnWrapper } = require('../libs');
+const { auth, isAdmin } =require('../middlewares')
 
+
+
+router.use(auth);
+router.use(isAdmin);
 
 router.post('/', async (req, res, next) => {
     const { firstName, lastName, DOB } = req.body;
@@ -40,6 +44,6 @@ router.get('/', async (req, res, next) => {
     const [err, data] = await asycnWrapper(authors);
     if (err) return next(err);
     res.status(200).json({ message: 'success', authors: data });
-})
+});
 
 module.exports = router

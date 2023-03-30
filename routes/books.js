@@ -2,7 +2,11 @@ const { booksController } = require('../controllers');
 const { asycnWrapper } = require('../libs');
 
 const router = require('express').Router();
+const { auth, isAdmin } =require('../middlewares')
 
+
+router.use(auth);
+router.use(isAdmin);
 
 router.post('/', async (req, res, next) => {
     const { body: { name, categoryId, authorId } } = req
@@ -22,5 +26,6 @@ router.delete('/:id', async (req, res, next) => {
     if (err) return next(err);
     res.status(200).json({ message: "deleted success"});
 })
+
 
 module.exports = router
