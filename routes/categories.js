@@ -1,6 +1,11 @@
 const router =require('express').Router();
 const{categoriesController}=require('../controllers')
 const {asycnWrapper}=require('../libs')
+const { auth, isAdmin } =require('../middlewares')
+
+
+router.use(auth);
+router.use(isAdmin);
 
 
 

@@ -2,7 +2,11 @@ const { booksController } = require('../controllers');
 const { asycnWrapper } = require('../libs');
 
 const router = require('express').Router();
+const { auth, isAdmin } =require('../middlewares')
 
+
+router.use(auth);
+router.use(isAdmin);
 
 router.post('/', async (req, res, next) => {
     const { body: { name, categoryId, authorId } } = req

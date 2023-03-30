@@ -13,7 +13,6 @@ const login = async (email, password) => {
     }
     const token = jwt.sign( { id: user.id, email: user.email}, JWT_SECRET, { expiresIn: '7d' } );
     return {
-        user,
         token
     };
 };
