@@ -1,16 +1,16 @@
 const { booksController } = require('../controllers');
 const { asycnWrapper } = require('../libs');
+const { auth, isAdmin } =require('../middlewares')
+const { BaseError } = require('../libs');
 
 const router = require('express').Router();
-const { auth, isAdmin } =require('../middlewares')
-
 
 router.use(auth);
 router.use(isAdmin);
 
 router.post('/', async (req, res, next) => {
     const { body: { name, categoryId, authorId } } = req
-    if (!req.file) return next(new Error('image is missing'))
+    if (!req.file) return next(new BaseError('image is missing',400))
 
     const photo = `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}`;
 

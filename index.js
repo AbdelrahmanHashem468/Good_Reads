@@ -18,7 +18,6 @@ app.use(upload);
 app.use(routes);
 
 app.use((error, req, res, next) => {
-    if (error.message === 'Authentication failed') error.statusCode = 401;
     if (!error.statusCode) error.statusCode = 500;
     return res
       .status(error.statusCode)

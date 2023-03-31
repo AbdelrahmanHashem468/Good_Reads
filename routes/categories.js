@@ -2,7 +2,7 @@ const router =require('express').Router();
 const{categoriesController}=require('../controllers')
 const {asycnWrapper}=require('../libs')
 const { auth, isAdmin } =require('../middlewares')
-
+const { BaseError } = require('../libs'); 
 
 router.use(auth);
 router.use(isAdmin);
@@ -28,7 +28,7 @@ router.patch('/:id',async(req,res,next)=>{
 router.delete('/:id',async(req,res,next)=>{
     const{id}=req.params;
     const category =  categoriesController.del({_id:id});
-    if(!category) throw new Error('Category not found');
+    if(!category) throw new BaseError('Category not found',400);
     const [err, data] = await asycnWrapper(category);
     if (err) return next(err);
     res.status(200).json({ message: 'deleted' });
