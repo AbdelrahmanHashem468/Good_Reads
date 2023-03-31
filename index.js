@@ -2,12 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes');
 const path = require('path');
+const cors = require('cors');
 const { upload } = require('./libs');
 require('dotenv').config();
 
 const mongoUrl = process.env.mongoUrl;
 mongoose.connect(mongoUrl);
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
