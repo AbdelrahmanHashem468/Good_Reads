@@ -3,19 +3,21 @@ const mongoose = require('mongoose');
 const authorSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true
+        required: true,
+        minLength: 3
     },
     lastName: {
         type: String,
-        required: true
+        required: true,
+        minLength: 3
     },
     DOB: {
         type: Date,
-        required: true
+        required: true,
     },
     photo: {
         type: String,
-        required: true
+        required: true,
     }
 }, {
     timestamps: true

@@ -15,17 +15,16 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/uploadImages', express.static(path.join(__dirname, 'uploadImages')))
-// app.use(express.static('./uploadImages'))
 
 app.use(upload);
 app.use(routes);
 
 app.use((error, req, res, next) => {
-    if (!error.statusCode) error.statusCode = 500;
-    return res
-      .status(error.statusCode)
-      .json({ error: error.toString() });
-  });
+  if (!error.statusCode) error.statusCode = 500;
+  return res
+    .status(error.statusCode)
+    .json({ error: error.toString() });
+});
 
 const PORT = process.env.PORT;
 

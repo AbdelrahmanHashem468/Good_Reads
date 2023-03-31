@@ -1,4 +1,5 @@
 const multer = require('multer');
+const BaseError = require('./baseError');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -13,7 +14,7 @@ function fileFilter(req, file, cb) {
     if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
         cb(null, true)
     } else {
-        cb('sorry invalid extension', false)
+        cb(new BaseError('invalid file extension', 400));
     }
 }
 

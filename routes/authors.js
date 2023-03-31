@@ -1,8 +1,9 @@
 const express = require('express');
 const { authorsController } = require('../controllers');
 const { asycnWrapper } = require('../libs')
-const { auth, isAdmin } =require('../middlewares')
-const { BaseError } = require('../libs'); 
+const { auth, isAdmin } = require('../middlewares')
+const { BaseError } = require('../libs');
+const { validation, AuthorValidator } = require('../middlewares/validation');
 
 const router = express.Router();
 
@@ -10,9 +11,9 @@ const router = express.Router();
 router.use(auth);
 router.use(isAdmin);
 
-router.post('/', async (req, res, next) => {
+router.post('/', validation(AuthorValidator.create), async (req, res, next) => {
     const { firstName, lastName, DOB } = req.body;
-    if (!req.file) return next(new BaseError('image is missing',400))
+    if (!req.file) return next(new BaseError('image is missing', 400))
 
     const photo = `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}`;
 
@@ -22,7 +23,7 @@ router.post('/', async (req, res, next) => {
     res.status(201).json({ message: 'success', author: data });
 })
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', validation(AuthorValidator.update), async (req, res, next) => {
     const { body: { firstName, lastName, DOB }, params: { id } } = req;
     const photo = req.file ? `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}` : undefined;
     const url = `${req.protocol}://${req.headers.host}/`
@@ -33,7 +34,7 @@ router.patch('/:id', async (req, res, next) => {
     res.status(200).json({ message: 'success', author: data });
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', validation(AuthorValidator.delete), async (req, res, next) => {
     const { id } = req.params;
     const deletedAuthor = authorsController.deleteAuthor(id, `${req.protocol}://${req.headers.host}/`)
     const [err, data] = await asycnWrapper(deletedAuthor);
