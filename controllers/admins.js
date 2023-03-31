@@ -1,8 +1,9 @@
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 const { BaseError } = require('../libs'); 
+require('dotenv').config();
 
-const { JWT_SECRET = 'Good_Reads' } = process.env;
+const { JWT_SECRET } = process.env;
 
 const login = async (email, password) => {
     const user = await User.findOne( { email } ).exec();

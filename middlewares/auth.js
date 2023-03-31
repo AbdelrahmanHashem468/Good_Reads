@@ -2,10 +2,10 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const { asycnWrapper } = require('../libs');
 const { User } = require('../models');
+require('dotenv').config();
 
 const asyncJwtVerify = promisify(jwt.verify);
-const { JWT_SECRET = 'Good_Reads' } = process.env;
-
+const { JWT_SECRET } = process.env;
 
 const auth = async (req, res, next)=>{
     const { headers: { authorization } } = req;

@@ -5,7 +5,7 @@ const path = require('path');
 const { upload } = require('./libs');
 require('dotenv').config();
 
-const mongoUrl = process.env.mongoUrl || 'mongodb://127.0.0.1:27017/test';
+const mongoUrl = process.env.mongoUrl;
 mongoose.connect(mongoUrl);
 const app = express();
 
@@ -24,6 +24,6 @@ app.use((error, req, res, next) => {
       .json({ error: error.toString() });
   });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => { console.log(`UP : 127.0.0.1:${PORT}`); });
