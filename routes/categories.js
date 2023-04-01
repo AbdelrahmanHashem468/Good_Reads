@@ -28,7 +28,7 @@ router.patch('/:id',validation(CategoryValidator.update),async(req,res,next)=>{
 })
 router.delete('/:id',validation(CategoryValidator.delete),async(req,res,next)=>{
     const{id}=req.params;
-    const category =  categoriesController.del({_id:id});
+    const category =  categoriesController.deleteCategory({_id:id});
     const [err, data] = await asycnWrapper(category);
     if (err) return next(err);
     res.status(200).json({ message: 'deleted' });
