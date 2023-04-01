@@ -14,7 +14,7 @@ const login = async (email, password) => {
     if (!valid){
         throw new BaseError('Authentication failed',401);
     }
-    const token = jwt.sign( { id: user.id, email: user.email}, JWT_SECRET, { expiresIn: '7d' } );
+    const token = jwt.sign( { id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' } );
     return {
         token
     };
