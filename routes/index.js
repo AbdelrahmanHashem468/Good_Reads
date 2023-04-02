@@ -1,17 +1,20 @@
 const express = require('express');
 const adminRoutes = require('./admins');
-const author = require('./authors')
-const book = require('./books')
-const categories = require('./categories')
+const authorRoutes = require('./authors')
+const bookRoutes = require('./books')
+const categoryRoutes = require('./categories')
+const userRoutes = require('./users')
 
 const router = express.Router();
 
 
 
 router.use('/admin', adminRoutes)
-router.use('/author', author)
-router.use('/categories', categories);
-router.use('/book', book);
+router.use('/author', authorRoutes)
+router.use('/categories', categoryRoutes);
+router.use('/book', bookRoutes);
+router.use('/user', userRoutes);
+
 
 module.exports = router;
 

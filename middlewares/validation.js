@@ -97,6 +97,15 @@ const UsersValidator = {
             email: Joi.string().email().required(),
             password: Joi.string().required().min(8),
         })
+    },
+    signUp:{
+        body: Joi.object().keys({
+            email: Joi.string().email().required(),
+            password: Joi.string().required().min(8),
+            firstName: Joi.string().required().min(3),
+            lastName: Joi.string().required().min(3),
+            DOB: Joi.date().required(),
+        })
     }
 }
 

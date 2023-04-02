@@ -31,11 +31,16 @@ const userSchema = new Schema(
           type: String,
           required: true,
         },
-        imageUrl: {
-          type: String,
-        },
+        DOB: {
+          type: Date,
+          required: true,
       },
-      {
+      photo: {
+          type: String,
+          required: true,
+      }
+    },
+    {
         timestamps: true,
         toJSON: {
           transform(doc, ret) {
@@ -45,13 +50,14 @@ const userSchema = new Schema(
     },
 );
 
+userSchema.pre('save', function preSave(next) {
+  this.password = bcrypt.hashSync(this.password,10);
+  next();
+})
 
 userSchema.methods.verfiyPassword = function verfiyPassword(password){
     return bcrypt.compareSync(password,this.password);
-}
-
-
-
+};
 
 const User = mongoose.model('User',userSchema);
 

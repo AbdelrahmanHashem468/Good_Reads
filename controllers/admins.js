@@ -16,11 +16,15 @@ const login = async (email, password) => {
     }
     const token = jwt.sign( { id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' } );
     return {
+        role: user.role,
         token
     };
 };
 
+const signUp = async (data) =>  User.create(data);
+
 
 module.exports = {
     login,
+    signUp
 }; 
