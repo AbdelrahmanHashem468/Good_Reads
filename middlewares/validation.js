@@ -37,7 +37,7 @@ const AuthorValidator = {
             id: Joi.string().length(24).required(),
         }),
     },
-    delete: {
+    idParam: {
         params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
         }),
@@ -57,7 +57,7 @@ const CategoryValidator = {
         }),
         params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
-        }),
+        }), 
     },
     delete: {
         params: Joi.object().required().keys({

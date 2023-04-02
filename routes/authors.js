@@ -7,6 +7,19 @@ const { validation, AuthorValidator } = require('../middlewares/validation');
 
 const router = express.Router();
 
+router.get('/', async (req, res, next) => {
+    const authors = authorsController.getAuthors();
+    const [err, data] = await asycnWrapper(authors);
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', authors: data });
+});
+
+router.get('/:id', validation(AuthorValidator.idParam), async (req, res, next) => {
+    const { id } = req.params;
+    const [err, data] = await asycnWrapper(authorsController.getAuthorById(id));
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', author: data });
+})
 
 router.use(auth);
 router.use(isAdmin);
@@ -34,19 +47,12 @@ router.patch('/:id', validation(AuthorValidator.update), async (req, res, next) 
     res.status(200).json({ message: 'success', author: data });
 })
 
-router.delete('/:id', validation(AuthorValidator.delete), async (req, res, next) => {
+router.delete('/:id', validation(AuthorValidator.idParam), async (req, res, next) => {
     const { id } = req.params;
     const deletedAuthor = authorsController.deleteAuthor(id, `${req.protocol}://${req.headers.host}/`)
     const [err, data] = await asycnWrapper(deletedAuthor);
     if (err) return next(err);
     res.status(200).json({ message: 'deleted' });
 })
-
-router.get('/', async (req, res, next) => {
-    const authors = authorsController.getAuthors();
-    const [err, data] = await asycnWrapper(authors);
-    if (err) return next(err);
-    res.status(200).json({ message: 'success', authors: data });
-});
 
 module.exports = router

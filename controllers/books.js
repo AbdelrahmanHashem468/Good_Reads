@@ -48,7 +48,7 @@ const update=async (id,data,url) => {
     return newBook;
 }
 
-const getBooks=()=>Books.find({})
+const getBooks=()=>Books.find({}).populate('categoryId authorId')
 
 
 module.exports = {

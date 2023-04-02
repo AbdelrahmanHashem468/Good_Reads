@@ -30,9 +30,15 @@ const deleteAuthor = async (id, url) => {
 }
 const getAuthors = () => Authors.find({})
 
+const getAuthorById = async(id) => {
+    const author = await Authors.findById(id);
+    if (!author) throw new BaseError('author not found',400);
+    return author;
+}
 module.exports = {
     create,
     update,
     deleteAuthor,
-    getAuthors
+    getAuthors,
+    getAuthorById
 }
