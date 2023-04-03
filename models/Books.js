@@ -20,14 +20,16 @@ const booksSchema = new mongoose.Schema(
         ref: 'Author'
     },
     totalRating:{
-        type: Number
+        type: Number,
+        default: 0
     },
     ratingNumber:{
-        type: Number
+        type: Number,
+        default: 0
     }
 },
 {
-    timestamps: true,        
+    timestamps: true, 
 }
 )
 

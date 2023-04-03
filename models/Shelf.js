@@ -6,7 +6,7 @@ const shelfSchema = new mongoose.Schema({
         {
             bookId: { type: mongoose.Types.ObjectId, ref: 'Book', required: true },
             shelf: { type: String, enum: ['reading', 'read', 'to-read'], required: true, default: 'read' },
-            rating: { type: Number }
+            rating: { type: Number, min:1, max:5 }
         }
     ]
 }, {

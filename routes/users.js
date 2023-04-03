@@ -1,9 +1,11 @@
 const express = require('express');
-const { adminController } = require('../controllers');
+const { adminController, shelfController } = require('../controllers');
 const { asycnWrapper } = require('../libs');
 const { validation, UsersValidator } = require('../middlewares/validation');
 const { BaseError } = require('../libs');
 const { Shelf } = require('../models');
+const { auth } = require('../middlewares');
+const { isUser } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -36,11 +38,17 @@ router.post('/signUp', validation(UsersValidator.signUp), async (req, res, next)
     res.status(201).json();
 });
 
+router.use(auth)
+router.use(isUser)
 
-// router.patch('/book/:id', async (req, res, next) => {
-//     const { params: { id } } = req;
-//     const { body:{rating, shelf} } = req;
+router.patch('/book/:id', async (req, res, next) => {
+    const { params: { id } } = req;
+    const { body: { rating, shelf } } = req;
 
-//     const addBook = await Shelf.findOneAndUpdate({'books.bookId': params.id})
-// })
+    const updateBook = shelfController.updateBooks({ userId: req.user._id, bookId: id, shelf, rating })
+    const [error, data] = await asycnWrapper(updateBook);
+    if(error) next(error);
+    res.status(200).json({data});
+
+})
 module.exports = router;
