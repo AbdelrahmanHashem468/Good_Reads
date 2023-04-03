@@ -1,4 +1,5 @@
 const { User } = require('../models');
+const { Shelf } = require('../models');
 const jwt = require('jsonwebtoken');
 const { BaseError } = require('../libs'); 
 require('dotenv').config();
@@ -21,7 +22,14 @@ const login = async (email, password) => {
     };
 };
 
-const signUp = async (data) =>  User.create(data);
+const signUp = async (data) =>  {
+    const user = await User.create(data);
+    if (!user) {
+        throw new BaseError('SignUp failed',500);
+    }
+    Shelf.create({userId:user.id});
+    return ;
+};
 
 
 module.exports = {

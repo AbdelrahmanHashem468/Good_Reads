@@ -4,6 +4,7 @@ const { asycnWrapper } = require('../libs');
 const { validation, UsersValidator } = require('../middlewares/validation');
 const { BaseError } = require('../libs');
 const { Shelf } = require('../models');
+const { createPhotoURL } = require('../libs');
 
 const router = express.Router();
 
