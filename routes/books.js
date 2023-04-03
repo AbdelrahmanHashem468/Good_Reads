@@ -30,7 +30,6 @@ router.post('/', validation(BookValidator.create), async (req, res, next) => {
     const { body: { name, categoryId, authorId } } = req
     if (!req.file) return next(new BaseError('image is missing', 400))
 
-    // const photo = `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}`;
     let photo = await createPhotoURL(`${req.file.destination}/${req.file.filename}`)
     const [err, data] = await asycnWrapper(booksController.create({ name, photo, categoryId, authorId }))
     if (err) return next(err);
