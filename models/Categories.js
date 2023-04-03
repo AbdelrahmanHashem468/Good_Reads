@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const CategoriesSchema = new mongoose.Schema({
 
@@ -14,6 +15,9 @@ const CategoriesSchema = new mongoose.Schema({
     {
         timestamps: true
     })
+
+CategoriesSchema.plugin(mongoosePaginate);
+
 
 const Category = mongoose.model('Category', CategoriesSchema);
 

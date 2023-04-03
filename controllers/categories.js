@@ -10,7 +10,14 @@ const deletedcat= await category.findByIdAndDelete(id)
 if(!deletedcat) throw new BaseError("Category not found",400)
 return deletedcat
 }
-const get =()=>category.find()
+const get = async (limit,page) => {
+    const categories = await category.paginate({}, {
+        page: page || 1,
+        limit: limit > 0 && limit < 10 ? limit : 10
+    });
+    return categories;
+};
+
 const getCategoryById = async(id) => {
     const cate = await category.findById(id);
     if (!cate) throw new BaseError('category not found',400);

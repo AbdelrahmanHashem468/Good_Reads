@@ -9,7 +9,9 @@ const { createPhotoURL } = require('../libs');
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
-    const authors = authorsController.getAuthors();
+    const limit = parseInt(req.query.limit);
+    const page  = parseInt(req.query.page);
+    const authors = authorsController.getAuthors(limit,page);
     const [err, data] = await asycnWrapper(authors);
     if (err) return next(err);
     res.status(200).json({ message: 'success', authors: data });

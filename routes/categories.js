@@ -8,7 +8,9 @@ const { validation, CategoryValidator} = require('../middlewares/validation');
 
 
 router.get('/' ,async(req,res,next) =>{
-    const category =  categoriesController.get();
+    const limit = parseInt(req.query.limit);
+    const page  = parseInt(req.query.page);
+    const category =  categoriesController.get(limit,page);
     const [err, data] = await asycnWrapper(category);
     if (err) return next(err);
     res.status(200).json({ message: 'success', category: data });

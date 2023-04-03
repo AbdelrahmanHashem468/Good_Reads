@@ -18,7 +18,14 @@ const deleteAuthor = async (id) => {
     if (!author) throw new BaseError('author not found', 400)
     return author;
 }
-const getAuthors = () => Authors.find({})
+
+const getAuthors = async (limit,page) => {
+    const authors = await Authors.paginate({}, {
+        page: page || 1,
+        limit: limit > 0 && limit < 10 ? limit : 10
+    });
+    return authors;
+};
 
 const getAuthorById = async (id) => {
     const author = await Authors.findById(id);
