@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config();
 const routes = require('./routes');
 const path = require('path');
 const cors = require('cors');
 const { upload } = require('./libs');
-require('dotenv').config();
 
 const mongoUrl = process.env.mongoUrl;
 mongoose.connect(mongoUrl);

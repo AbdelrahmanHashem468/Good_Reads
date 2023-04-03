@@ -4,6 +4,7 @@ const { asycnWrapper } = require('../libs')
 const { auth, isAdmin } = require('../middlewares')
 const { BaseError } = require('../libs');
 const { validation, AuthorValidator } = require('../middlewares/validation');
+const { createPhotoURL } = require('../libs');
 
 const router = express.Router();
 
@@ -27,9 +28,7 @@ router.use(isAdmin);
 router.post('/', validation(AuthorValidator.create), async (req, res, next) => {
     const { firstName, lastName, DOB } = req.body;
     if (!req.file) return next(new BaseError('image is missing', 400))
-
-    const photo = `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}`;
-
+    let photo = await createPhotoURL(`${req.file.destination}/${req.file.filename}`)
     const author = authorsController.create({ firstName, lastName, DOB: new Date(DOB), photo });
     const [err, data] = await asycnWrapper(author);
     if (err) return next(err);
@@ -38,10 +37,10 @@ router.post('/', validation(AuthorValidator.create), async (req, res, next) => {
 
 router.patch('/:id', validation(AuthorValidator.update), async (req, res, next) => {
     const { body: { firstName, lastName, DOB }, params: { id } } = req;
-    const photo = req.file ? `${req.protocol}://${req.headers.host}/${req.file.destination}/${req.file.filename}` : undefined;
-    const url = `${req.protocol}://${req.headers.host}/`
 
-    const author = authorsController.update({ _id: id }, { firstName, lastName, DOB, photo }, url);
+    const photo = req.file ? await createPhotoURL(`${req.file.destination}/${req.file.filename}`) : undefined;
+
+    const author = authorsController.update({ _id: id }, { firstName, lastName, DOB, photo });
     const [err, data] = await asycnWrapper(author);
     if (err) return next(err);
     res.status(200).json({ message: 'success', author: data });

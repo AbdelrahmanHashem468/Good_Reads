@@ -59,7 +59,8 @@ const CategoryValidator = {
             id: Joi.string().length(24).required(),
         }), 
     },
-    delete: {
+   
+    idParam: {
         params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
         }),
