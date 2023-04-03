@@ -42,10 +42,16 @@ const update=async (id,data) => {
 
 const getBooks=()=>Books.find({}).populate('categoryId authorId')
 
+const getBookById=(id)=>{
+    const book =Books.findById(id).populate('categoryId authorId')
+    if(!book) throw new BaseError('Book not found',400)
+    return book;
 
+}
 module.exports = {
     create,
     deleteBook,
     update,
     getBooks,
+    getBookById
 };

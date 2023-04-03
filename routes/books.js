@@ -11,7 +11,12 @@ router.get('/', async (req, res, next) => {
     if (err) return next(err);
     res.status(200).json({ message: 'success', books: data });
 })
-
+router.get('/:id', validation(BookValidator.idParam), async (req, res, next) => {
+    const { id } = req.params;
+    const [err, data] = await asycnWrapper(booksController.getBookById(id));
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', book: data });
+})
 router.use(auth);
 router.use(isAdmin);
 
@@ -26,7 +31,7 @@ router.post('/', validation(BookValidator.create), async (req, res, next) => {
     res.status(201).json({ message: "success", book: data });
 });
 
-router.delete('/:id', validation(BookValidator.delete), async (req, res, next) => {
+router.delete('/:id', validation(BookValidator.idParam), async (req, res, next) => {
     const { id } = req.params
     const [err, data] = await asycnWrapper(booksController.deleteBook(id))
     if (err) return next(err);
@@ -42,5 +47,6 @@ router.patch('/:id', validation(BookValidator.update), async (req, res, next) =>
     res.status(200).json({ message: "success", book: data });
 
 })
+
 
 module.exports = router
