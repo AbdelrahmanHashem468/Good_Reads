@@ -6,6 +6,23 @@ const { validation, BookValidator } = require('../middlewares/validation');
 
 const router = require('express').Router();
 
+
+router.get('/', async (req, res, next) => {
+    const limit = parseInt(req.query.limit);
+    const page  = parseInt(req.query.page);
+    const [err, data] = await asycnWrapper(booksController.getBooks(limit,page))
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', books: data });
+});
+
+router.get('/:id', validation(BookValidator.idParam), async (req, res, next) => {
+    const { id } = req.params
+    const [err, data] = await asycnWrapper(booksController.getBookByID(id))
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', book: data });
+});
+
+
 router.use(auth);
 router.use(isAdmin);
 
@@ -20,7 +37,7 @@ router.post('/', validation(BookValidator.create), async (req, res, next) => {
     res.status(201).json({ message: "success", book: data });
 });
 
-router.delete('/:id', validation(BookValidator.delete), async (req, res, next) => {
+router.delete('/:id', validation(BookValidator.idParam), async (req, res, next) => {
     const { id } = req.params
     const url = `${req.protocol}://${req.headers.host}/`
     const [err, data] = await asycnWrapper(booksController.deleteBook(id, url))
@@ -39,9 +56,4 @@ router.patch('/:id', validation(BookValidator.update), async (req, res, next) =>
 
 })
 
-router.get('/', async (req, res, next) => {
-    const [err, data] = await asycnWrapper(booksController.getBooks())
-    if (err) return next(err);
-    res.status(200).json({ message: 'success', books: data });
-})
 module.exports = router

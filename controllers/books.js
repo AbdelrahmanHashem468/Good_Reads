@@ -48,12 +48,26 @@ const update=async (id,data,url) => {
     return newBook;
 }
 
-const getBooks=()=>Books.find({}).populate('categoryId authorId')
+const getBooks = async (limit,page) => {
+    const books = await Books.paginate({}, {
+        page: page || 1,
+        limit: limit > 0 && limit < 10 ? limit : 10
+    });
+    return books;
+};
 
+const getBookByID = async (id) => {
+    const book = await Books.findById(id);
+    if (!book){
+        throw new BaseError('book not found',400);
+    }
+    return book;
+};
 
 module.exports = {
     create,
     deleteBook,
     update,
     getBooks,
+    getBookByID
 };
