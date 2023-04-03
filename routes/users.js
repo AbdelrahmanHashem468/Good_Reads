@@ -3,7 +3,7 @@ const { adminController, shelfController } = require('../controllers');
 const { asycnWrapper } = require('../libs');
 const { validation, UsersValidator } = require('../middlewares/validation');
 const { BaseError } = require('../libs');
-const { Shelf } = require('../models');
+const { createPhotoURL } = require('../libs');
 const { auth } = require('../middlewares');
 const { isUser } = require('../middlewares/auth');
 
