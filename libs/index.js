@@ -1,5 +1,5 @@
 const BaseError = require('./baseError');
-const upload = require('./uploadPhoto');
+const { upload, createPhotoURL } = require('./uploadPhoto');
 
 const asycnWrapper = (promise) => promise.then((data) => [undefined, data]).catch((error) => [error]);
 
@@ -7,5 +7,6 @@ const asycnWrapper = (promise) => promise.then((data) => [undefined, data]).catc
 module.exports = {
     BaseError,
     asycnWrapper,
-    upload
+    upload,
+    createPhotoURL
 }

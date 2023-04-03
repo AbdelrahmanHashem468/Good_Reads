@@ -1,6 +1,5 @@
 const { Categories, Books, Authors } = require("../models");
 const { BaseError } = require('../libs');
-const fs = require('fs')
 
 const create = async (data) => {
     const cat = await Categories.findById(data.categoryId);
@@ -13,17 +12,17 @@ const create = async (data) => {
     return book;
 }
 
-const deleteBook = async (id, url) => {
+const deleteBook = async (id) => {
     let book = await Books.findByIdAndDelete(id)
     if (!book) throw new BaseError('book not found',400)
-    let oldPhoto = book.photo.split(url)[1]
-    if (fs.existsSync(oldPhoto)) {
-        fs.unlinkSync(oldPhoto);
-    }
+    // let oldPhoto = book.photo.split(url)[1]
+    // if (fs.existsSync(oldPhoto)) {
+    //     fs.unlinkSync(oldPhoto);
+    // }
     return book;
 }
 
-const update=async (id,data,url) => {
+const update=async (id,data) => {
     let book = await Books.findById(id)
     if (!book) throw new BaseError('book not found',400)
 
@@ -38,13 +37,6 @@ const update=async (id,data,url) => {
     }
     let newBook = await Books.findByIdAndUpdate(id, data, { new: true })
     if (!newBook) throw new BaseError('error updating book',500)
-
-    if (data.photo) { //if error occurs in update, photo won't be deleted?!!
-        let oldPhoto = book.photo.split(url)[1]
-        if (fs.existsSync(oldPhoto)) {
-            fs.unlinkSync(oldPhoto);
-        }
-    }
     return newBook;
 }
 
