@@ -1,8 +1,12 @@
+const { BaseError } = require("../libs");
 const { Shelf, Books } = require("../models");
 
 const updateBooks = async (filter) => {
     let result;
+    const bookExists = await Books.findById(filter.bookId)
+    if(!bookExists) throw new BaseError('Book not found',400);
     let previousRating = 0;
+
     const addBook = await Shelf.findOneAndUpdate({ userId: filter.userId, 'books.bookId': { $ne: filter.bookId } },
         { $push: { books: { bookId: filter.bookId, rating: filter.rating, shelf: filter.shelf } } }, { new: true })
         .select({ books: { $elemMatch: { bookId: filter.bookId } } });
