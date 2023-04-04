@@ -51,7 +51,7 @@ router.patch('/book/:id', validation(UsersValidator.shelf), async (req, res, nex
     res.status(200).json({data});
 })
 
-router.delete('/book/:id', async (req, res, next) => {
+router.delete('/book/:id', validation(UsersValidator.idParam), async (req, res, next) => {
     const { params: { id } } = req;
     const updateBook = shelfController.deleteBook({ userId: req.user._id, bookId: id});
     const [error, data] = await asycnWrapper(updateBook);

@@ -116,6 +116,11 @@ const UsersValidator = {
         , params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
         }),
+    },
+    idParam: {
+        params: Joi.object().required().keys({
+            id: Joi.string().length(24).required(),
+        }),
     }
 }
 
