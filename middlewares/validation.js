@@ -57,9 +57,9 @@ const CategoryValidator = {
         }),
         params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
-        }), 
+        }),
     },
-   
+
     idParam: {
         params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
@@ -93,13 +93,13 @@ const BookValidator = {
 }
 
 const UsersValidator = {
-    login:{
+    login: {
         body: Joi.object().keys({
             email: Joi.string().email().required(),
             password: Joi.string().required().min(8),
         })
     },
-    signUp:{
+    signUp: {
         body: Joi.object().keys({
             email: Joi.string().email().required(),
             password: Joi.string().required().min(8),
@@ -107,6 +107,15 @@ const UsersValidator = {
             lastName: Joi.string().required().min(3),
             DOB: Joi.date().required(),
         })
+    },
+    shelf: {
+        body: Joi.object().keys({
+            shelf: Joi.string().valid('currently reading', 'read', 'want to read'),
+            rating: Joi.number().min(1).max(5)
+        })
+        , params: Joi.object().required().keys({
+            id: Joi.string().length(24).required(),
+        }),
     }
 }
 
