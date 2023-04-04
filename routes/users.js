@@ -51,4 +51,12 @@ router.patch('/book/:id', async (req, res, next) => {
     res.status(200).json({data});
 
 })
+
+router.delete('/book/:id', async (req, res, next) => {
+    const { params: { id } } = req;
+    const updateBook = shelfController.deleteBook({ userId: req.user._id, bookId: id});
+    const [error, data] = await asycnWrapper(updateBook);
+    if(error) next(error);
+    res.status(200).json({data});
+})
 module.exports = router;

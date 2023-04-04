@@ -35,4 +35,20 @@ const updateAvgRating = async (bookId, rating, previousRating) => {
     book.save();
 }
 
-module.exports = { updateBooks };
+
+const deleteBook = async (filter) => {
+    const oldBook = await Shelf.findOne({ userId: filter.userId }).select({ books: { $elemMatch: { bookId: filter.bookId } } });
+    if(!oldBook.books[0])
+        return ;
+    const deletedbook = await Shelf.findOneAndUpdate({userId: filter.userId},
+        { $pull:{ books: { bookId: filter.bookId } }});
+    if(!oldBook.books[0].rating)
+        return deletedbook;
+    const book = await Books.findById(filter.bookId);
+    book.totalRating = book.totalRating - oldBook.books[0].rating;
+    book.ratingNumber--;
+    book.save();
+    return oldBook;
+}
+
+module.exports = { updateBooks ,deleteBook};
