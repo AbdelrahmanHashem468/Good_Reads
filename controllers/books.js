@@ -83,6 +83,8 @@ const editReview = async (bookId, userId, comment) => {
     return book;
 }
 
+const getpopular = ()=>Books.find({}).sort([['avgRate',-1],['ratingNumber',-1]]).limit(10).select('photo name ')
+
 module.exports = {
     create,
     deleteBook,
@@ -90,5 +92,6 @@ module.exports = {
     getBooks,
     getBookByID,
     addReview,
-    editReview
+    editReview,
+    getpopular
 };

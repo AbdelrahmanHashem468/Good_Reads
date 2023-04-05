@@ -24,11 +24,44 @@ const getCategoryById = async(id) => {
     const book=books.find({categoryId:cate.id}).select('name photo authorId').populate([{ path:'authorId', select: 'firstName lastName' }]);
     return book;
 }
+const getPopular = async ()=>{
+    const popularCategories = await books.aggregate([
+        {
+          $sort: { avgRate: -1 , ratingNumber:-1}
+        },
+        {
+          $limit: 10
+        },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category"
+          }
+        },
+        {
+          $group: {
+            _id: "$category._id", // group by category name
+            categories: { $addToSet: "$category" } // add categories to array
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            categories: 1 // return only the categories array
+          }
+        }
+      ])
+      return popularCategories;
+};
+
 module.exports={
     create,
     update,
     deleteCategory,
     get,
-    getCategoryById
+    getCategoryById,
+    getPopular
     
 }

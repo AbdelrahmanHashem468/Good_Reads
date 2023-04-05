@@ -35,10 +35,45 @@ const getAuthorById = async (id,userid) => {
     
     return { author, authorBooks };
 }
+
+
+const getPopular = async ()=>{
+    const popularAuthors = await Book.aggregate([
+        {
+          $sort: { avgRate: -1 , ratingNumber:-1}
+        },
+        {
+          $limit: 10
+        },
+        {
+          $lookup: {
+            from: "authors",
+            localField: "authorId",
+            foreignField: "_id",
+            as: "author"
+          }
+        },
+        {
+          $group: {
+            _id: "$author._id", // group by category name
+            authors: { $addToSet: "$author" } // add categories to array
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            authors: 1 // return only the categories array
+          }
+        }
+      ])
+      return popularAuthors;
+};
+
 module.exports = {
     create,
     update,
     deleteAuthor,
     getAuthors,
-    getAuthorById
+    getAuthorById,
+    getPopular
 }

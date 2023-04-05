@@ -8,10 +8,8 @@ const { isUser } = require('../middlewares/auth');
 const router = require('express').Router();
 
 
-router.get('/', async (req, res, next) => {
-    const limit = parseInt(req.query.limit);
-    const page = parseInt(req.query.page);
-    const [err, data] = await asycnWrapper(booksController.getBooks(limit, page))
+router.get('/popular', async (req, res, next) => {
+    const [err, data] = await asycnWrapper(booksController.getpopular())
     if (err) return next(err);
     res.status(200).json({ message: 'success', books: data });
 });
@@ -19,7 +17,16 @@ router.get('/', async (req, res, next) => {
 
 
 
+
 router.use(auth);
+
+router.get('/', async (req, res, next) => {
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
+    const [err, data] = await asycnWrapper(booksController.getBooks(limit, page))
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', books: data });
+});
 
 router.get('/:id', isUser,validation(BookValidator.idParam), async (req, res, next) => {
     const { id } = req.params

@@ -9,6 +9,16 @@ const { isUser } = require('../middlewares/auth');
 
 const router = express.Router();
 
+
+
+
+router.get('/popular', async (req, res, next) => {
+    const [err, data] = await asycnWrapper(authorsController.getPopular())
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', authors: data });
+});
+router.use(auth);
+
 router.get('/', async (req, res, next) => {
     const limit = parseInt(req.query.limit);
     const page  = parseInt(req.query.page);
@@ -17,11 +27,6 @@ router.get('/', async (req, res, next) => {
     if (err) return next(err);
     res.status(200).json({ message: 'success', authors: data });
 });
-
-
-
-router.use(auth);
-
 
 router.get('/:id',isUser, validation(AuthorValidator.idParam), async (req, res, next) => {
     const { id } = req.params;
