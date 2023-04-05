@@ -53,7 +53,12 @@ const userSchema = new Schema(
 userSchema.pre('save', function preSave(next) {
   this.password = bcrypt.hashSync(this.password,10);
   next();
-})
+});
+
+userSchema.pre('findOneAndUpdate',function preUpdate(next) {
+  this._update.password = bcrypt.hashSync(this._update.password, 10);
+  next();
+});
 
 userSchema.methods.verfiyPassword = function verfiyPassword(password){
     return bcrypt.compareSync(password,this.password);

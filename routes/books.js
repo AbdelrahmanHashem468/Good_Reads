@@ -50,7 +50,6 @@ router.patch('/:id', validation(BookValidator.update), async (req, res, next) =>
     const [err, data] = await asycnWrapper(booksController.update({ _id: id }, { name, photo, categoryId, authorId }))
     if (err) return next(err);
     res.status(200).json({ message: "success", book: data });
-
-})
+});
 
 module.exports = router

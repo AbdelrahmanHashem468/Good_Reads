@@ -31,8 +31,16 @@ const signUp = async (data) =>  {
     return ;
 };
 
+const updateUser = async (id,data) => {
+    const user = await User.findById(id)
+    if (!user) throw new BaseError('user not found', 400)
 
+    const newUser= await User.findByIdAndUpdate(id, data, { new: true })
+    if (!newUser) throw new BaseError('error updating User', 500)
+    return newUser;
+}
 module.exports = {
     login,
-    signUp
+    signUp,
+    updateUser
 }; 

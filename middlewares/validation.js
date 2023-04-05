@@ -108,6 +108,15 @@ const UsersValidator = {
             DOB: Joi.date().required(),
         })
     },
+    update: {
+        body: Joi.object().keys({
+            email: Joi.string().email(),
+            password: Joi.string().min(8),
+            firstName: Joi.string().min(3),
+            lastName: Joi.string().min(3),
+            DOB: Joi.date(),
+        })
+    },
     shelf: {
         body: Joi.object().keys({
             shelf: Joi.string().valid('currently reading', 'read', 'want to read'),
