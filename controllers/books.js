@@ -1,5 +1,6 @@
 const { Categories, Books, Authors } = require("../models");
 const { BaseError } = require('../libs');
+const { deletePhoto } = require('../libs');
 
 const create = async (data) => {
     const cat = await Categories.findById(data.categoryId);
@@ -14,7 +15,9 @@ const create = async (data) => {
 
 const deleteBook = async (id) => {
     let book = await Books.findByIdAndDelete(id)
-    if (!book) throw new BaseError('book not found', 400)
+    if (!book) throw new BaseError('book not found', 400);
+    const public_Id = book.photo.split('/')[7].split('.')[0]
+    deletePhoto(public_Id);
     // let oldPhoto = book.photo.split(url)[1]
     // if (fs.existsSync(oldPhoto)) {
     //     fs.unlinkSync(oldPhoto);

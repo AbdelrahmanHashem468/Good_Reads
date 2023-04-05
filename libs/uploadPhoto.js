@@ -21,6 +21,10 @@ const createPhotoURL = async (url) => {
     return photo;
 }
 
+const deletePhoto = async (url) => {
+    cloudinary.uploader.destroy(url,{ resource_type: 'image'})
+        .then(result=>console.log(result));
+}
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -41,4 +45,4 @@ function fileFilter(req, file, cb) {
 
 const upload = multer({ dest: 'uploadImages/', fileFilter, storage }).single('photo')
 
-module.exports = { upload, createPhotoURL };
+module.exports = { upload, createPhotoURL ,deletePhoto };
