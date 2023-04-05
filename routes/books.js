@@ -3,14 +3,15 @@ const { asycnWrapper, createPhotoURL } = require('../libs');
 const { auth, isAdmin } = require('../middlewares')
 const { BaseError } = require('../libs');
 const { validation, BookValidator } = require('../middlewares/validation');
+const { isUser } = require('../middlewares/auth');
 
 const router = require('express').Router();
 
 
 router.get('/', async (req, res, next) => {
     const limit = parseInt(req.query.limit);
-    const page  = parseInt(req.query.page);
-    const [err, data] = await asycnWrapper(booksController.getBooks(limit,page))
+    const page = parseInt(req.query.page);
+    const [err, data] = await asycnWrapper(booksController.getBooks(limit, page))
     if (err) return next(err);
     res.status(200).json({ message: 'success', books: data });
 });
@@ -24,7 +25,24 @@ router.get('/:id', validation(BookValidator.idParam), async (req, res, next) => 
 
 
 router.use(auth);
+
+router.patch('/:id/review', isUser, validation(BookValidator.reviews), async (req, res, next) => {
+    const { body: { comment }, params: { id } } = req
+    const userId = req.user.id
+    const [err, data] = await asycnWrapper(booksController.addReview(id, userId, comment))
+    if (err) return next(err);
+    res.status(200).json({ message: "success", book: data });
+})
+router.patch('/:id/review/edit', isUser, validation(BookValidator.reviews), async (req, res, next) => {
+    const { body: { comment }, params: { id } } = req
+    const userId = req.user.id
+    const [err, data] = await asycnWrapper(booksController.editReview(id, userId, comment))
+    if (err) return next(err);
+    res.status(200).json({ message: "success", book: data });
+})
+
 router.use(isAdmin);
+
 
 router.post('/', validation(BookValidator.create), async (req, res, next) => {
     const { body: { name, categoryId, authorId } } = req

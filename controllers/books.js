@@ -15,10 +15,6 @@ const create = async (data) => {
 const deleteBook = async (id) => {
     let book = await Books.findByIdAndDelete(id)
     if (!book) throw new BaseError('book not found', 400)
-    // let oldPhoto = book.photo.split(url)[1]
-    // if (fs.existsSync(oldPhoto)) {
-    //     fs.unlinkSync(oldPhoto);
-    // }
     return book;
 }
 
@@ -57,11 +53,34 @@ const getBookByID = async (id) => {
     return book;
 };
 
+const addReview = async (bookId, userId, comment) => {
+    const filter = { _id: bookId, "reviews.userId": { $ne: userId } };
+    const update = { $push: { reviews: { userId, comment } } };
+    const options = { new: true };
+
+    const book = await Books.findOneAndUpdate(filter, update, options);
+    if (!book) throw new BaseError('user already commented',400)
+
+    return book;
+}
+
+const editReview = async (bookId, userId, comment) => {
+    const filter = { _id: bookId, "reviews.userId": userId };
+    const update = { $set: { "reviews.$.comment": comment } };
+    const options = { new: true };
+
+    const book = await Books.findOneAndUpdate(filter, update, options);
+
+    if (!book) throw new BaseError('couldn\'t update book', 400);
+    return book;
+}
 
 module.exports = {
     create,
     deleteBook,
     update,
     getBooks,
-    getBookByID
+    getBookByID,
+    addReview,
+    editReview
 };

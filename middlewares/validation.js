@@ -89,7 +89,16 @@ const BookValidator = {
         params: Joi.object().required().keys({
             id: Joi.string().length(24).required(),
         }),
+    },
+    reviews:{
+        params: Joi.object().required().keys({
+            id: Joi.string().length(24).required(),
+        }),
+        body: Joi.object().keys({
+            comment: Joi.string().max(500)
+        })
     }
+
 }
 
 const UsersValidator = {
