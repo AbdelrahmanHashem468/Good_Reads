@@ -5,6 +5,7 @@ const { auth, isAdmin } = require('../middlewares')
 const { BaseError } = require('../libs');
 const { validation, AuthorValidator } = require('../middlewares/validation');
 const { createPhotoURL } = require('../libs');
+const { isUser } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -17,14 +18,19 @@ router.get('/', async (req, res, next) => {
     res.status(200).json({ message: 'success', authors: data });
 });
 
-router.get('/:id', validation(AuthorValidator.idParam), async (req, res, next) => {
+
+
+router.use(auth);
+
+
+router.get('/:id',isUser, validation(AuthorValidator.idParam), async (req, res, next) => {
     const { id } = req.params;
-    const [err, data] = await asycnWrapper(authorsController.getAuthorById(id));
+    const userid=req.user.id;
+    const [err, data] = await asycnWrapper(authorsController.getAuthorById(id,userid));
     if (err) return next(err);
     res.status(200).json({ message: 'success', author: data });
 })
 
-router.use(auth);
 router.use(isAdmin);
 
 router.post('/', validation(AuthorValidator.create), async (req, res, next) => {

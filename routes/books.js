@@ -16,16 +16,19 @@ router.get('/', async (req, res, next) => {
     res.status(200).json({ message: 'success', books: data });
 });
 
-router.get('/:id', validation(BookValidator.idParam), async (req, res, next) => {
-    const { id } = req.params
-    const [err, data] = await asycnWrapper(booksController.getBookByID(id))
-    if (err) return next(err);
-    res.status(200).json({ message: 'success', book: data });
-});
+
 
 
 router.use(auth);
 
+router.get('/:id', isUser,validation(BookValidator.idParam), async (req, res, next) => {
+    const { id } = req.params
+    const user=req.user.id
+    console.log (user)
+    const [err, data] = await asycnWrapper(booksController.getBookByID(id,user))
+    if (err) return next(err);
+    res.status(200).json({ message: 'success', book: data });
+});
 router.patch('/:id/review', isUser, validation(BookValidator.reviews), async (req, res, next) => {
     const { body: { comment }, params: { id } } = req
     const userId = req.user.id

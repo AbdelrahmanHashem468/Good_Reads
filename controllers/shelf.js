@@ -58,7 +58,7 @@ const deleteBook = async (filter) => {
 const getUserBooks = async (shelf,userId) => {
     if (!shelf)
     {
-        const books =  await Shelf.findOne({ userId: userId });
+        const books =  await Shelf.findOne({ userId: userId }).populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
         return books;
     }
     
@@ -72,6 +72,7 @@ const getUserBooks = async (shelf,userId) => {
         }
     }
     })
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
     // const books = Shelf.aggregate([
     //     { $match :{userId: new mongoose.Types.ObjectId(userId)}},
     //     { $unwind: '$books' },

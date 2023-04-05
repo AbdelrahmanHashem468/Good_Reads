@@ -47,7 +47,7 @@ virtual.get(function(value, virtual, doc) {
 booksSchema.set('toJSON', {
     virtuals: true, 
     transform: function (doc, ret) {
-        // delete ret.totalRating;
+        delete ret.totalRating;
         // delete ret.ratingNumber;
         delete ret.id;
     },

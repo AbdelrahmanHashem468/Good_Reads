@@ -1,6 +1,7 @@
 const Authors = require('../models').Authors
 const { BaseError } = require('../libs');
 const Book = require('../models/Books');
+const Shelf = require('../models/Shelf');
 
 const create = (data) => Authors.create(data)
 
@@ -27,10 +28,11 @@ const getAuthors = async (limit,page) => {
     return authors;
 };
 
-const getAuthorById = async (id) => {
+const getAuthorById = async (id,userid) => {
     const author = await Authors.findById(id);
     if (!author) throw new BaseError('author not found', 400);
-    const authorBooks = await Book.find({ authorId: author._id })
+    const authorBooks = await Book.find({ authorId: author._id }).select('-categoryId -authorId -reviews');
+    
     return { author, authorBooks };
 }
 module.exports = {

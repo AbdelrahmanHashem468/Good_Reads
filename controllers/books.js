@@ -1,4 +1,4 @@
-const { Categories, Books, Authors } = require("../models");
+const { Categories, Books, Authors ,Shelf} = require("../models");
 const { BaseError } = require('../libs');
 const { deletePhoto } = require('../libs');
 
@@ -43,17 +43,22 @@ const getBooks = async (limit, page) => {
     const books = Books.paginate({}, {
         page: page || 1,
         limit: limit > 0 && limit < 10 ? limit : 10,
-        populate: { path: 'categoryId authorId', select: 'Name firstName lastName' },
+        populate: [{path:'authorId', select: 'firstName lastName' }],
+        select:'name photo'
     })
     return books
 };
 
-const getBookByID = async (id) => {
+const getBookByID = async (id,userid) => {
     const book = await Books.findById(id).populate({ path: 'categoryId', select: 'Name' }).populate({ path: 'authorId', select: 'firstName lastName' })
+
     if (!book) {
         throw new BaseError('book not found', 400);
     }
-    return book;
+    const user=await Shelf.findOne({userId: userid,'books.bookId':book._id}).select({ books: { $elemMatch: { bookId: book._id } } })
+    const shelf=user.books[0]
+    
+    return {book,shelf};
 };
 
 const addReview = async (bookId, userId, comment) => {

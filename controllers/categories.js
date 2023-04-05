@@ -21,7 +21,7 @@ const get = async (limit,page) => {
 const getCategoryById = async(id) => {
     const cate = await category.findById(id);
     if (!cate) throw new BaseError('category not found',400);
-    const book=books.find({categoryId:cate.id}).populate('authorId');
+    const book=books.find({categoryId:cate.id}).select('name photo authorId').populate([{ path:'authorId', select: 'firstName lastName' }]);
     return book;
 }
 module.exports={
