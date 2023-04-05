@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const shelfSchema = new mongoose.Schema({
     userId: { type: mongoose.Types.ObjectId, ref: 'User'},
@@ -12,6 +13,8 @@ const shelfSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+
+shelfSchema.plugin(mongoosePaginate);
 
 const Shelf = mongoose.model('Shelf', shelfSchema);
 module.exports = Shelf;

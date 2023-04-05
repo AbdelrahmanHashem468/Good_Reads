@@ -57,5 +57,14 @@ router.delete('/book/:id', validation(UsersValidator.idParam), async (req, res, 
     const [error, data] = await asycnWrapper(updateBook);
     if(error) next(error);
     res.status(200).json({data});
-})
+});
+
+router.get('/book/', async (req, res, next) => {
+    const { query: { shelf } } = req;
+    const updateBook = shelfController.getUserBooks(shelf,req.user.id);
+    const [error, data] = await asycnWrapper(updateBook);
+    if(error) next(error);
+    res.status(200).json({data});
+});
+
 module.exports = router;

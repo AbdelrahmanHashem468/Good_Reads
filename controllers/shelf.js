@@ -53,6 +53,37 @@ const deleteBook = async (filter) => {
     book.ratingNumber--;
     book.save();
     return oldBook;
+};
+
+const getUserBooks = async (shelf,userId) => {
+    if (!shelf)
+    {
+        const books =  await Shelf.findOne({ userId: userId });
+        return books;
+    }
+    
+    const books = Shelf.findOne({ userId: userId })
+    .select({
+    books: {
+        $filter: {
+        input: '$books',
+        as: 'book',
+        cond: { $eq: ['$$book.shelf', shelf] }
+        }
+    }
+    })
+    // const books = Shelf.aggregate([
+    //     { $match :{userId: new mongoose.Types.ObjectId(userId)}},
+    //     { $unwind: '$books' },
+    //     { $match: { 'books.shelf': shelf } },
+    //     { $group: { _id: '$_id', books: { $push: '$books' } } }
+    // ]);
+
+    return books;
 }
 
-module.exports = { updateBooks ,deleteBook};
+module.exports = { 
+    updateBooks,
+    deleteBook,
+    getUserBooks
+};
