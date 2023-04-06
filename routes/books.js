@@ -7,16 +7,11 @@ const { isUser } = require('../middlewares/auth');
 
 const router = require('express').Router();
 
-
 router.get('/popular', async (req, res, next) => {
     const [err, data] = await asycnWrapper(booksController.getpopular())
     if (err) return next(err);
     res.status(200).json({ message: 'success', books: data });
 });
-
-
-
-
 
 router.use(auth);
 
@@ -52,7 +47,6 @@ router.patch('/:id/review/edit', isUser, validation(BookValidator.reviews), asyn
 })
 
 router.use(isAdmin);
-
 
 router.post('/', validation(BookValidator.create), async (req, res, next) => {
     const { body: { name, categoryId, authorId } } = req

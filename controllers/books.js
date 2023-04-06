@@ -43,14 +43,15 @@ const getBooks = async (limit, page) => {
     const books = Books.paginate({}, {
         page: page || 1,
         limit: limit > 0 && limit < 10 ? limit : 10,
-        populate: [{path:'authorId', select: 'firstName lastName' }],
-        select:'name photo'
+        populate: [{path:'authorId', select: 'firstName lastName' },{path:'categoryId', select: 'Name'}],
+        select :'-reviews'
     })
     return books
 };
 
 const getBookByID = async (id,userid) => {
-    const book = await Books.findById(id).populate({ path: 'categoryId', select: 'Name' }).populate({ path: 'authorId', select: 'firstName lastName' })
+    const book = await Books.findById(id).populate({ path: 'categoryId', select: 'Name' })
+    .populate({ path: 'authorId', select: 'firstName lastName' })
 
     if (!book) {
         throw new BaseError('book not found', 400);

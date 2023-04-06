@@ -112,6 +112,7 @@ const UsersValidator = {
         body: Joi.object().keys({
             email: Joi.string().email().required(),
             password: Joi.string().required().min(8),
+            cPassword: Joi.string().valid(Joi.ref('password')).required(),
             firstName: Joi.string().required().min(3),
             lastName: Joi.string().required().min(3),
             DOB: Joi.date().required(),
