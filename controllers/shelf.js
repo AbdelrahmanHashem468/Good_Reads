@@ -73,12 +73,59 @@ const getUserBooks = async (shelf,userId) => {
     }
     })
     .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
-    // const books = Shelf.aggregate([
-    //     { $match :{userId: new mongoose.Types.ObjectId(userId)}},
-    //     { $unwind: '$books' },
-    //     { $match: { 'books.shelf': shelf } },
-    //     { $group: { _id: '$_id', books: { $push: '$books' } } }
-    // ]);
+
+    // const options = {
+    //     page: 1,
+    //     limit: 2,
+    //     sort: { 'books.rating': 'desc' },
+    //     populate: {
+    //     path: 'books.bookId',
+    //     select: 'name',
+    //     options: {
+    //         limit: 2
+    //     }
+    //     },
+    //     customLabels: {
+    //     docs: 'books'
+    //     },
+    //     collation: {
+    //     locale: 'en_US'
+    //     },
+    //     lean: true
+    // };
+    
+    // const pipeline = [
+    //     {
+    //     $unwind: '$books'
+    //     },
+    //     {
+    //     $group: {
+    //         _id: '$_id',
+    //         userId: { $first: '$userId' },
+    //         books: {
+    //         $push: '$books'
+    //         }
+    //     }
+    //     }
+    // ];
+    
+    // const books = await Shelf.aggregate(pipeline).paginate({},{options})
+
+
+    // const options = {
+    //     page: 1,
+    //     limit: 10,
+    //     populate: {
+    //     path: 'books.bookId',
+    //     select: 'name photo',
+    //     options: {
+    //         limit: 5
+    //     }
+    //     },
+    //     lean: true
+    // };
+    
+    // const books = await Shelf.paginateSubDocs({}, 'books', options)
 
     return books;
 }
