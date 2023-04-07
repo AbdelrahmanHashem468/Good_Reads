@@ -1,4 +1,4 @@
-const { Categories, Books, Authors ,Shelf} = require("../models");
+const { Categories, Books, Authors, Shelf } = require("../models");
 const { BaseError } = require('../libs');
 const { deletePhoto } = require('../libs');
 
@@ -43,23 +43,26 @@ const getBooks = async (limit, page) => {
     const books = Books.paginate({}, {
         page: page || 1,
         limit: limit > 0 && limit < 10 ? limit : 10,
-        populate: [{path:'authorId', select: 'firstName lastName' },{path:'categoryId', select: 'Name'}],
-        select :'-reviews'
+        populate: [{ path: 'authorId', select: 'firstName lastName' }, { path: 'categoryId', select: 'Name' }],
+        select: '-reviews'
     })
     return books
 };
 
-const getBookByID = async (id,userid) => {
+const getBookByID = async (id, userid) => {
     const book = await Books.findById(id).populate({ path: 'categoryId', select: 'Name' })
-    .populate({ path: 'authorId', select: 'firstName lastName' })
-
+        .populate({ path: 'authorId', select: 'firstName lastName' })
+    
     if (!book) {
         throw new BaseError('book not found', 400);
     }
-    const user=await Shelf.findOne({userId: userid,'books.bookId':book._id}).select({ books: { $elemMatch: { bookId: book._id } } })
-    const shelf=user.books[0]
-    
-    return {book,shelf};
+    let shelf;
+    if (userid) {
+        const user = await Shelf.findOne({ userId: userid, 'books.bookId': book.id })
+        .select({ books: { $elemMatch: { bookId: book._id } } })
+        if(user) shelf = user.books
+    }
+    return { book, shelf };
 };
 
 const addReview = async (bookId, userId, comment) => {
@@ -68,7 +71,7 @@ const addReview = async (bookId, userId, comment) => {
     const options = { new: true };
 
     const book = await Books.findOneAndUpdate(filter, update, options);
-    if (!book) throw new BaseError('user already commented',400)
+    if (!book) throw new BaseError('user already commented', 400)
 
     return book;
 }
@@ -84,7 +87,7 @@ const editReview = async (bookId, userId, comment) => {
     return book;
 }
 
-const getpopular = ()=>Books.find({}).sort([['avgRate',-1],['ratingNumber',-1]]).limit(10).select('photo name ')
+const getpopular = () => Books.find({}).sort([['avgRate', -1], ['ratingNumber', -1]]).limit(10).select('photo name ')
 
 module.exports = {
     create,

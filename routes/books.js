@@ -3,7 +3,7 @@ const { asycnWrapper, createPhotoURL } = require('../libs');
 const { auth, isAdmin } = require('../middlewares')
 const { BaseError } = require('../libs');
 const { validation, BookValidator } = require('../middlewares/validation');
-const { isUser } = require('../middlewares/auth');
+const { isUser, authUser } = require('../middlewares/auth');
 
 const router = require('express').Router();
 
@@ -13,8 +13,6 @@ router.get('/popular', async (req, res, next) => {
     res.status(200).json({ message: 'success', books: data });
 });
 
-router.use(auth);
-
 router.get('/', async (req, res, next) => {
     const limit = parseInt(req.query.limit);
     const page = parseInt(req.query.page);
@@ -23,14 +21,21 @@ router.get('/', async (req, res, next) => {
     res.status(200).json({ message: 'success', books: data });
 });
 
-router.get('/:id', isUser,validation(BookValidator.idParam), async (req, res, next) => {
+router.get('/:id', validation(BookValidator.idParam), async (req, res, next) => {
     const { id } = req.params
-    const user=req.user.id
-    console.log (user)
-    const [err, data] = await asycnWrapper(booksController.getBookByID(id,user))
+    const { headers: { authorization } } = req;
+    let userId = null
+    if (authorization) {
+        const user = await authUser(authorization)
+        if (user) userId = user._id
+    }
+    const [err, data] = await asycnWrapper(booksController.getBookByID(id, userId))
     if (err) return next(err);
     res.status(200).json({ message: 'success', book: data });
 });
+
+router.use(auth);
+
 router.patch('/:id/review', isUser, validation(BookValidator.reviews), async (req, res, next) => {
     const { body: { comment }, params: { id } } = req
     const userId = req.user.id
