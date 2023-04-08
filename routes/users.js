@@ -71,8 +71,8 @@ router.delete('/book/:id', validation(UsersValidator.idParam), async (req, res, 
 });
 
 router.get('/book/', async (req, res, next) => {
-    const { query: { shelf } } = req;
-    const updateBook = shelfController.getUserBooks(shelf,req.user.id);
+    const { query: { shelf, page, limit} } = req;
+    const updateBook = shelfController.getUserBooks(shelf,req.user.id,page,limit);
     const [error, data] = await asycnWrapper(updateBook);
     if(error) next(error);
     res.status(200).json({data});

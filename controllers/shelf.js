@@ -1,4 +1,4 @@
-const { BaseError } = require("../libs");
+const { BaseError,paginationOption } = require("../libs");
 const { Shelf, Books } = require("../models");
 
 const updateBooks = async (filter) => {
@@ -55,80 +55,75 @@ const deleteBook = async (filter) => {
     return oldBook;
 };
 
-const getUserBooks = async (shelf,userId) => {
+const getUserBooks = async (shelf,userId,page,limit) => {
+    const pageSize =  limit > 0 && limit < 10 ? Number(limit) : 10;
+    const pageNumber = page ? Number(page) : 1;
+    // const pageSize =  2;
+    // const pageNumber = 1;
+    console.log("🚀 ~ file: shelf.js:60 ~ getUserBooks ~ pageSize:", pageSize)
+    console.log("🚀 ~ file: shelf.js:61 ~ getUserBooks ~ pageNumber:", pageNumber)
+
     if (!shelf)
     {
-        const books =  await Shelf.findOne({ userId: userId }).populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
-        return books;
+        return getAllUserBooks(userId,pageSize,pageNumber);
     }
-    
-    const books = Shelf.findOne({ userId: userId })
+    return getUserBooksByShelf(userId,shelf,pageSize,pageNumber)
+
+}
+
+const getAllUserBooks = async (userId,pageSize,pageNumber ) => {
+    const count = await Shelf.findOne({ userId: userId });
+    const books =  await Shelf.findOne({ userId: userId })
+    .select({books:1,_id:0,userId:0,createdAt:0,updatedAt:0,__v:0})
+    .slice('books', [pageSize * (pageNumber - 1), pageSize])
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
+    const option = paginationOption(pageSize,pageNumber,count.books.length)
+    const result = {
+        "docs" : books.books,
+        option
+    }
+    return result;
+}
+
+
+const getUserBooksByShelf = async (userId,shelf,pageSize,pageNumber) => {
+    const books = await Shelf.findOne({ userId: userId })
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }])
+    .slice('books', [pageSize * (pageNumber - 1), pageSize])
     .select({
     books: {
-        $filter: {
-        input: '$books',
-        as: 'book',
-        cond: { $eq: ['$$book.shelf', shelf] }
-        }
+        $slice:[
+            {"$filter" : {
+                input: '$books',
+                as: 'book',
+                cond: { $eq: ['$$book.shelf', shelf] }
+                }},
+                pageSize * (pageNumber - 1), pageSize
+        ]
+    },
+    _id:0} )
+
+
+    const count = await Shelf.findOne({ userId: userId })
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }])
+    .slice('books', [pageSize * (pageNumber - 1), pageSize])
+    .select({
+    books: {
+        $filter : {
+                input: '$books',
+                as: 'book',
+                cond: { $eq: ['$$book.shelf', shelf] }
+                }},
+    } )
+    const option = paginationOption(pageSize,pageNumber,count.books.length)
+    const result = {
+        "docs" : books.books,
+        option
     }
-    })
-    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
-
-    // const options = {
-    //     page: 1,
-    //     limit: 2,
-    //     sort: { 'books.rating': 'desc' },
-    //     populate: {
-    //     path: 'books.bookId',
-    //     select: 'name',
-    //     options: {
-    //         limit: 2
-    //     }
-    //     },
-    //     customLabels: {
-    //     docs: 'books'
-    //     },
-    //     collation: {
-    //     locale: 'en_US'
-    //     },
-    //     lean: true
-    // };
-    
-    // const pipeline = [
-    //     {
-    //     $unwind: '$books'
-    //     },
-    //     {
-    //     $group: {
-    //         _id: '$_id',
-    //         userId: { $first: '$userId' },
-    //         books: {
-    //         $push: '$books'
-    //         }
-    //     }
-    //     }
-    // ];
-    
-    // const books = await Shelf.aggregate(pipeline).paginate({},{options})
-
-
-    // const options = {
-    //     page: 1,
-    //     limit: 10,
-    //     populate: {
-    //     path: 'books.bookId',
-    //     select: 'name photo',
-    //     options: {
-    //         limit: 5
-    //     }
-    //     },
-    //     lean: true
-    // };
-    
-    // const books = await Shelf.paginateSubDocs({}, 'books', options)
-
-    return books;
+    return result;
 }
+
+
 
 module.exports = { 
     updateBooks,
