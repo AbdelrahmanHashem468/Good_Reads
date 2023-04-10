@@ -1,5 +1,5 @@
-const { Authors, Books } = require('../models')
-const { BaseError } = require('../libs');
+const { Authors, Books, Shelf } = require('../models')
+const { BaseError, deletePhoto } = require('../libs');
 
 const create = (data) => Authors.create(data)
 
@@ -15,6 +15,8 @@ const update = async (id, data) => {
 const deleteAuthor = async (id) => {
   let author = await Authors.findByIdAndDelete(id)
   if (!author) throw new BaseError('author not found', 400)
+  const public_Id = author.photo.split('/')[7].split('.')[0]
+  deletePhoto(public_Id);
   return author;
 }
 
@@ -26,19 +28,43 @@ const getAuthors = async (limit, page) => {
   return authors;
 };
 
-const getAuthorById = async (id) => {
+const getAuthorById = async (id, userId) => {
   const author = await Authors.findById(id);
   if (!author) throw new BaseError('author not found', 400);
-  const authorBooks = await Books.find({ authorId: author._id }).select('-categoryId -authorId -reviews');
+  const authorBooks = await Books.find({ authorId: author._id }).select('-categoryId -authorId -reviews').lean();
+  if (!userId) return { author, authorBooks };
 
+  for (let book of authorBooks) {
+    const shelf = await Shelf.findOne({ userId, 'books.bookId': book._id }).select({ books: { $elemMatch: { bookId: book._id } } }).lean()
+    if (shelf) {
+      book.userRate = shelf.books[0].rating;
+      book.shelf = shelf.books[0].shelf;
+      console.log(book.userRate);
+    }
+  }
   return { author, authorBooks };
 }
-
 
 const getPopular = async () => {
   const popularAuthors = await Books.aggregate([
     {
-      $sort: { avgRate: -1, ratingNumber: -1 }
+      $match: {
+        ratingNumber: { $gt: 0 }
+      }
+    },
+    {
+      $project: {
+        name: 1,
+        photo: 1,
+        categoryId: 1,
+        authorId: 1,
+        totalRating: 1,
+        ratingNumber: 1,
+        avgRate: { $divide: ["$totalRating", "$ratingNumber"] }
+      }
+    },
+    {
+      $sort: { avgRate: -1 }
     },
     {
       $limit: 10

@@ -16,7 +16,9 @@ router.get('/popular', async (req, res, next) => {
 router.get('/', async (req, res, next) => {
     const limit = parseInt(req.query.limit);
     const page = parseInt(req.query.page);
-    const [err, data] = await asycnWrapper(booksController.getBooks(limit, page))
+    const key = req.query.key;
+
+    const [err, data] = await asycnWrapper(booksController.getBooks(limit, page, key))
     if (err) return next(err);
     res.status(200).json({ message: 'success', books: data });
 });

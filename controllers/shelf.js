@@ -31,9 +31,14 @@ const updateBooks = async (filter) => {
 const updateAvgRating = async (bookId, rating, previousRating) => {
     const book = await Books.findById(bookId);
     if (previousRating) {
-        book.totalRating = book.totalRating - previousRating + rating;
+        console.log(typeof book.totalRating);
+        console.log(typeof previousRating);
+        console.log(typeof rating);
+
+        book.totalRating = book.totalRating - previousRating + Number(rating);
+        console.log(book.totalRating);
     } else {
-        book.totalRating = book.totalRating + rating;
+        book.totalRating = book.totalRating + Number(rating);
         book.ratingNumber++;
     }
     book.save();
@@ -76,7 +81,7 @@ const getAllUserBooks = async (userId,pageSize,pageNumber ) => {
     const books =  await Shelf.findOne({ userId: userId })
     .select({books:1,_id:0,userId:0,createdAt:0,updatedAt:0,__v:0})
     .slice('books', [pageSize * (pageNumber - 1), pageSize])
-    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}]}]);
     const option = paginationOption(pageSize,pageNumber,count.books.length)
     const result = {
         "docs" : books.books,
@@ -88,7 +93,7 @@ const getAllUserBooks = async (userId,pageSize,pageNumber ) => {
 
 const getUserBooksByShelf = async (userId,shelf,pageSize,pageNumber) => {
     const books = await Shelf.findOne({ userId: userId })
-    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }])
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}]}])
     .slice('books', [pageSize * (pageNumber - 1), pageSize])
     .select({
     books: {
@@ -105,7 +110,7 @@ const getUserBooksByShelf = async (userId,shelf,pageSize,pageNumber) => {
 
 
     const count = await Shelf.findOne({ userId: userId })
-    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }])
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}]}])
     .slice('books', [pageSize * (pageNumber - 1), pageSize])
     .select({
     books: {

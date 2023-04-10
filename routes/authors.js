@@ -5,6 +5,7 @@ const { auth, isAdmin } = require('../middlewares')
 const { BaseError } = require('../libs');
 const { validation, AuthorValidator } = require('../middlewares/validation');
 const { createPhotoURL } = require('../libs');
+const { authUser } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -25,7 +26,13 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', validation(AuthorValidator.idParam), async (req, res, next) => {
     const { id } = req.params;
-    const [err, data] = await asycnWrapper(authorsController.getAuthorById(id));
+    const { headers: { authorization } } = req;
+    let userId = null
+    if (authorization) {
+        const user = await authUser(authorization)
+        if (user) userId = user._id
+    }
+    const [err, data] = await asycnWrapper(authorsController.getAuthorById(id, userId));
     if (err) return next(err);
     res.status(200).json({ message: 'success', author: data });
 })
@@ -56,7 +63,7 @@ router.patch('/:id', validation(AuthorValidator.update), async (req, res, next) 
 
 router.delete('/:id', validation(AuthorValidator.idParam), async (req, res, next) => {
     const { id } = req.params;
-    const deletedAuthor = authorsController.deleteAuthor(id, `${req.protocol}://${req.headers.host}/`)
+    const deletedAuthor = authorsController.deleteAuthor(id)
     const [err, data] = await asycnWrapper(deletedAuthor);
     if (err) return next(err);
     res.status(200).json({ message: 'deleted' });
