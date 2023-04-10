@@ -39,8 +39,10 @@ const update = async (id, data) => {
     return newBook;
 }
 
-const getBooks = async (limit, page) => {
-    const books = Books.paginate({}, {
+const getBooks = async (limit, page, key) => {
+    let filter = {};
+    if (key) filter = { name: { $regex: new RegExp(key, "i") } }
+    const books = Books.paginate(filter, {
         page: page || 1,
         limit: limit > 0 && limit < 10 ? limit : 10,
         populate: [{ path: 'authorId', select: 'firstName lastName' }, { path: 'categoryId', select: 'Name' }],
@@ -52,15 +54,15 @@ const getBooks = async (limit, page) => {
 const getBookByID = async (id, userid) => {
     const book = await Books.findById(id).populate({ path: 'categoryId', select: 'Name' })
         .populate({ path: 'authorId', select: 'firstName lastName' })
-    
+
     if (!book) {
         throw new BaseError('book not found', 400);
     }
     let shelf;
     if (userid) {
         const user = await Shelf.findOne({ userId: userid, 'books.bookId': book.id })
-        .select({ books: { $elemMatch: { bookId: book._id } } })
-        if(user) shelf = user.books
+            .select({ books: { $elemMatch: { bookId: book._id } } })
+        if (user) shelf = user.books
     }
     return { book, shelf };
 };
@@ -87,7 +89,34 @@ const editReview = async (bookId, userId, comment) => {
     return book;
 }
 
-const getpopular = () => Books.find({}).sort([['avgRate', -1], ['ratingNumber', -1]]).limit(10).select('photo name ')
+// const getpopular = () => Books.find({}).addFields({ ratingRatio: { $divide: [ "$avgRate", "$ratingNumber" ] } })
+const getpopular = async () => {
+
+    const books = await Books.aggregate([
+        {
+            $match: {
+                ratingNumber: { $gt: 0 }
+            }
+        },
+        {
+            $project: {
+                name: 1,
+                photo: 1,
+                categoryId: 1,
+                authorId: 1,
+                totalRating: 1,
+                ratingNumber: 1,
+                avgRate: { $divide: ["$totalRating", "$ratingNumber"] }
+            }
+        },
+        {
+            $sort: { avgRate: -1, ratingNumber: -1 }
+        }
+    ]);
+
+    return books
+}
+
 
 module.exports = {
     create,
@@ -97,5 +126,5 @@ module.exports = {
     getBookByID,
     addReview,
     editReview,
-    getpopular
+    getpopular,
 };

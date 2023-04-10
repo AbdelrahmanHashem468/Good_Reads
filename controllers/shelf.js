@@ -31,9 +31,14 @@ const updateBooks = async (filter) => {
 const updateAvgRating = async (bookId, rating, previousRating) => {
     const book = await Books.findById(bookId);
     if (previousRating) {
-        book.totalRating = book.totalRating - previousRating + rating;
+        console.log(typeof book.totalRating);
+        console.log(typeof previousRating);
+        console.log(typeof rating);
+
+        book.totalRating = book.totalRating - previousRating + Number(rating);
+        console.log(book.totalRating);
     } else {
-        book.totalRating = book.totalRating + rating;
+        book.totalRating = book.totalRating + Number(rating);
         book.ratingNumber++;
     }
     book.save();

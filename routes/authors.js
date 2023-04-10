@@ -56,7 +56,7 @@ router.patch('/:id', validation(AuthorValidator.update), async (req, res, next) 
 
 router.delete('/:id', validation(AuthorValidator.idParam), async (req, res, next) => {
     const { id } = req.params;
-    const deletedAuthor = authorsController.deleteAuthor(id, `${req.protocol}://${req.headers.host}/`)
+    const deletedAuthor = authorsController.deleteAuthor(id)
     const [err, data] = await asycnWrapper(deletedAuthor);
     if (err) return next(err);
     res.status(200).json({ message: 'deleted' });
