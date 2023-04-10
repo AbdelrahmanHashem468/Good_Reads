@@ -22,7 +22,7 @@ router.get('/:id', validation(CategoryValidator.idParam), async (req, res, next)
     const { id } = req.params;
     const [err, data] = await asycnWrapper(categoriesController.getCategoryById(id));
     if (err) return next(err);
-    res.status(200).json({ message: 'success', book: data });
+    res.status(200).json({ message: 'success', data });
 })
 
 router.use(auth);
