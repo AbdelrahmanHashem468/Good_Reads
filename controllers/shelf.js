@@ -81,7 +81,7 @@ const getAllUserBooks = async (userId,pageSize,pageNumber ) => {
     const books =  await Shelf.findOne({ userId: userId })
     .select({books:1,_id:0,userId:0,createdAt:0,updatedAt:0,__v:0})
     .slice('books', [pageSize * (pageNumber - 1), pageSize])
-    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}], select: 'photo name' }]);
+    .populate([{ path: 'books.bookId',populate:[{path:'authorId', select:'firstName lastName'}]}]);
     const option = paginationOption(pageSize,pageNumber,count.books.length)
     const result = {
         "docs" : books.books,

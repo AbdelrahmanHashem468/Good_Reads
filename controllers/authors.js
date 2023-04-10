@@ -1,4 +1,4 @@
-const { Authors, Books } = require('../models')
+const { Authors, Books, Shelf } = require('../models')
 const { BaseError, deletePhoto } = require('../libs');
 
 const create = (data) => Authors.create(data)
@@ -28,14 +28,22 @@ const getAuthors = async (limit, page) => {
   return authors;
 };
 
-const getAuthorById = async (id) => {
+const getAuthorById = async (id, userId) => {
   const author = await Authors.findById(id);
   if (!author) throw new BaseError('author not found', 400);
-  const authorBooks = await Books.find({ authorId: author._id }).select('-categoryId -authorId -reviews');
+  const authorBooks = await Books.find({ authorId: author._id }).select('-categoryId -authorId -reviews').lean();
+  if (!userId) return { author, authorBooks };
 
+  for (let book of authorBooks) {
+    const shelf = await Shelf.findOne({ userId, 'books.bookId': book._id }).select({ books: { $elemMatch: { bookId: book._id } } }).lean()
+    if (shelf) {
+      book.userRate = shelf.books[0].rating;
+      book.shelf = shelf.books[0].shelf;
+      console.log(book.userRate);
+    }
+  }
   return { author, authorBooks };
 }
-
 
 const getPopular = async () => {
   const popularAuthors = await Books.aggregate([
