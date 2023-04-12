@@ -18,12 +18,18 @@ const get = async (limit, page) => {
   return categories;
 };
 
-const getCategoryById = async(id) => {
+const getCategoryById = async(id,page,limit) => {
     const cate = await category.findById(id);
     if (!cate) throw new BaseError('category not found',400);
-    const book= await books.find({categoryId:cate.id}).select('name photo authorId').populate([{ path:'authorId', select: 'firstName lastName' }]);
+    const book= await books.paginate({categoryId:cate.id}, {
+      page: page || 1,
+      limit: limit > 0 && limit < 10 ? limit : 10,
+      populate:[{ path:'authorId', select: 'firstName lastName' }]
+    });
     return {book,cate};
 }
+
+
 const getPopular = async () => {
   const popularCategories = await books.aggregate([
     {

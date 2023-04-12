@@ -19,10 +19,12 @@ router.get('/' ,async(req,res,next) =>{
     res.status(200).json({ message: 'success', category: data });
 })
 router.get('/:id', validation(CategoryValidator.idParam), async (req, res, next) => {
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
     const { id } = req.params;
-    const [err, data] = await asycnWrapper(categoriesController.getCategoryById(id));
+    const [err, data] = await asycnWrapper(categoriesController.getCategoryById(id,page,limit));
     if (err) return next(err);
-    res.status(200).json({ message: 'success', data });
+    res.status(200).json({ data });
 })
 
 router.use(auth);
@@ -30,11 +32,11 @@ router.use(auth);
 router.use(isAdmin);
 
 router.post('/',validation(CategoryValidator.create),async (req,res,next)=>{
- const{body:{Name}}=req;
- const category= categoriesController.create({Name});
- const [err, data] = await asycnWrapper(category);
- if (err) return next(err);
- res.status(201).json({ message: 'success', category: data });
+    const{body:{Name}}=req;
+    const category= categoriesController.create({Name});
+    const [err, data] = await asycnWrapper(category);
+    if (err) return next(err);
+    res.status(201).json({ message: 'success', category: data });
 })
 
 router.patch('/:id',validation(CategoryValidator.update),async(req,res,next)=>{
