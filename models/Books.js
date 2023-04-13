@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
+const Shelf = require('./Shelf');
 
 const booksSchema = new mongoose.Schema(
 {
@@ -52,6 +53,13 @@ booksSchema.set('toJSON', {
         delete ret.id;
     },
 });
+
+booksSchema.post('findOneAndDelete', async function postDelete(next) {
+    const bookId = this.getQuery()['_id'];
+    console.log(bookId);
+    const result = await Shelf.updateMany({},{ $pull: { books: { bookId: bookId } } }
+    );
+})
 
 
 booksSchema.plugin(mongoosePaginate);
