@@ -73,17 +73,14 @@ const getPopular = async () => {
     {
       $group: {
         _id: null, // group by author name
-        authors: { $addToSet: "$author" } // add authors to array
+        authors: { $addToSet: "$author" }, // add authors to array
       }
     },
     {
       $project: {
         _id: 0,
-        authors: 1 // return only the authors array
+        authors: { $slice: ["$authors", 10] }
       }
-    },
-    {
-      $limit: 10
     }
   ])
   return popularAuthors[0].authors;

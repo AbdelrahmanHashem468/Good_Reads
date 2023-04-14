@@ -27,7 +27,6 @@ const authorSchema = new mongoose.Schema({
 
 authorSchema.plugin(mongoosePaginate);
 
-
 authorSchema.pre('findOneAndDelete', async function preDelete(next) {
     const authorId = this.getQuery()['_id'];
     const count =  await Book.countDocuments({authorId:authorId});
@@ -38,7 +37,6 @@ authorSchema.pre('findOneAndDelete', async function preDelete(next) {
         next();
     }
 })
-
 
 const Author = mongoose.model('Author', authorSchema);
 

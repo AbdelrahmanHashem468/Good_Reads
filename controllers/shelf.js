@@ -31,12 +31,7 @@ const updateBooks = async (filter) => {
 const updateAvgRating = async (bookId, rating, previousRating) => {
     const book = await Books.findById(bookId);
     if (previousRating) {
-        console.log(typeof book.totalRating);
-        console.log(typeof previousRating);
-        console.log(typeof rating);
-
         book.totalRating = book.totalRating - previousRating + Number(rating);
-        console.log(book.totalRating);
     } else {
         book.totalRating = book.totalRating + Number(rating);
         book.ratingNumber++;
@@ -63,11 +58,6 @@ const deleteBook = async (filter) => {
 const getUserBooks = async (shelf,userId,page,limit) => {
     const pageSize =  limit > 0 && limit < 10 ? Number(limit) : 10;
     const pageNumber = page ? Number(page) : 1;
-    // const pageSize =  2;
-    // const pageNumber = 1;
-    console.log("🚀 ~ file: shelf.js:60 ~ getUserBooks ~ pageSize:", pageSize)
-    console.log("🚀 ~ file: shelf.js:61 ~ getUserBooks ~ pageNumber:", pageNumber)
-
     if (!shelf)
     {
         return getAllUserBooks(userId,pageSize,pageNumber);

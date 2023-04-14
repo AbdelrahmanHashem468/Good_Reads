@@ -16,8 +16,11 @@ const create = async (data) => {
 const deleteBook = async (id) => {
     let book = await Books.findByIdAndDelete(id)
     if (!book) throw new BaseError('book not found', 400);
-    const public_Id = book.photo.split('/')[7].split('.')[0]
-    deletePhoto(public_Id);
+    let public_Id;
+    if (book.photo.split('/')[7]) {
+        public_Id = book.photo.split('/')[7].split('.')[0]
+        deletePhoto(public_Id);
+    }
     return book;
 }
 
@@ -52,8 +55,10 @@ const getBooks = async (limit, page, key) => {
 };
 
 const getBookByID = async (id, userid) => {
-    const book = await Books.findById(id).populate({ path: 'categoryId', select: 'Name' })
+    const book = await Books.findById(id)
+        .populate({ path: 'categoryId', select: 'Name' })
         .populate({ path: 'authorId', select: 'firstName lastName' })
+        .populate({ path: 'reviews.userId', select: 'firstName lastName' });
 
     if (!book) {
         throw new BaseError('book not found', 400);
@@ -112,13 +117,12 @@ const getpopular = async () => {
             $sort: { avgRate: -1 }
         },
         {
-            $limit :10
+            $limit: 10
         }
     ]);
 
     return books
 }
-
 
 module.exports = {
     create,

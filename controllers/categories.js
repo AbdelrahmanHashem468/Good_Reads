@@ -2,7 +2,6 @@ const category = require('../models/Categories')
 const { BaseError } = require('../libs');
 const books = require('../models/Books')
 
-
 const create = (data) => category.create(data)
 const update = (id, data) => category.findByIdAndUpdate(id, data, { new: true })
 const deleteCategory = async (id) => {
@@ -28,7 +27,6 @@ const getCategoryById = async(id,page,limit) => {
     });
     return {book,cate};
 }
-
 
 const getPopular = async () => {
   const popularCategories = await books.aggregate([
@@ -65,11 +63,8 @@ const getPopular = async () => {
     {
       $project: {
         _id: 0,
-        categories: 1 // return only the categories array
+        categories: { $slice: ["$categories", 5] }
       }
-    },
-    {
-      $limit: 10
     }
   ])
   return popularCategories[0].categories;

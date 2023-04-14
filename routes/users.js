@@ -64,16 +64,25 @@ router.patch('/book/:id', validation(UsersValidator.shelf), async (req, res, nex
 
 router.delete('/book/:id', validation(UsersValidator.idParam), async (req, res, next) => {
     const { params: { id } } = req;
-    const updateBook = shelfController.deleteBook({ userId: req.user._id, bookId: id});
-    const [error, data] = await asycnWrapper(updateBook);
+    const book = shelfController.deleteBook({ userId: req.user._id, bookId: id});
+    const [error, data] = await asycnWrapper(book);
     if(error) next(error);
     res.status(200).json({data});
 });
 
 router.get('/book/', async (req, res, next) => {
     const { query: { shelf, page, limit} } = req;
-    const updateBook = shelfController.getUserBooks(shelf,req.user.id,page,limit);
-    const [error, data] = await asycnWrapper(updateBook);
+    const getBooks = shelfController.getUserBooks(shelf,req.user.id,page,limit);
+    const [error, data] = await asycnWrapper(getBooks);
+    if(error) next(error);
+    res.status(200).json({data});
+});
+
+//testing ====> get user profile by userID
+router.get('/:id/book/', async (req, res, next) => {
+    const { query: { shelf, page, limit} } = req;
+    const getBooks = shelfController.getUserBooks(shelf,req.params.id,page,limit);
+    const [error, data] = await asycnWrapper(getBooks);
     if(error) next(error);
     res.status(200).json({data});
 });

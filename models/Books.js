@@ -56,7 +56,6 @@ booksSchema.set('toJSON', {
 
 booksSchema.post('findOneAndDelete', async function postDelete(next) {
     const bookId = this.getQuery()['_id'];
-    console.log(bookId);
     const result = await Shelf.updateMany({},{ $pull: { books: { bookId: bookId } } }
     );
 })
