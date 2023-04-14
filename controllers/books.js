@@ -89,7 +89,6 @@ const editReview = async (bookId, userId, comment) => {
     return book;
 }
 
-// const getpopular = () => Books.find({}).addFields({ ratingRatio: { $divide: [ "$avgRate", "$ratingNumber" ] } })
 const getpopular = async () => {
 
     const books = await Books.aggregate([
@@ -110,7 +109,10 @@ const getpopular = async () => {
             }
         },
         {
-            $sort: { avgRate: -1, ratingNumber: -1 }
+            $sort: { avgRate: -1 }
+        },
+        {
+            $limit :10
         }
     ]);
 

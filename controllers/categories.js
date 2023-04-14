@@ -39,20 +39,14 @@ const getPopular = async () => {
     },
     {
       $project: {
-        name: 1,
-        photo: 1,
         categoryId: 1,
-        authorId: 1,
         totalRating: 1,
         ratingNumber: 1,
         avgRate: { $divide: ["$totalRating", "$ratingNumber"] }
       }
     },
     {
-      $sort: { avgRate: -1, ratingNumber: -1 }
-    },
-    {
-      $limit: 10
+      $sort: { avgRate: -1 }
     },
     {
       $lookup: {
@@ -64,7 +58,7 @@ const getPopular = async () => {
     },
     {
       $group: {
-        _id: "$category._id", // group by category name
+        _id: null, // group by category name
         categories: { $addToSet: "$category" } // add categories to array
       }
     },
@@ -73,9 +67,12 @@ const getPopular = async () => {
         _id: 0,
         categories: 1 // return only the categories array
       }
+    },
+    {
+      $limit: 10
     }
   ])
-  return popularCategories;
+  return popularCategories[0].categories;
 };
 
 module.exports = {
@@ -85,5 +82,4 @@ module.exports = {
   get,
   getCategoryById,
   getPopular
-
 }

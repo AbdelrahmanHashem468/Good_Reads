@@ -39,7 +39,6 @@ const getAuthorById = async (id, userId) => {
     if (shelf) {
       book.userRate = shelf.books[0].rating;
       book.shelf = shelf.books[0].shelf;
-      console.log(book.userRate);
     }
   }
   return { author, authorBooks };
@@ -54,9 +53,6 @@ const getPopular = async () => {
     },
     {
       $project: {
-        name: 1,
-        photo: 1,
-        categoryId: 1,
         authorId: 1,
         totalRating: 1,
         ratingNumber: 1,
@@ -65,9 +61,6 @@ const getPopular = async () => {
     },
     {
       $sort: { avgRate: -1 }
-    },
-    {
-      $limit: 10
     },
     {
       $lookup: {
@@ -79,18 +72,22 @@ const getPopular = async () => {
     },
     {
       $group: {
-        _id: "$author._id", // group by category name
-        authors: { $addToSet: "$author" } // add categories to array
+        _id: null, // group by author name
+        authors: { $addToSet: "$author" } // add authors to array
       }
     },
     {
       $project: {
         _id: 0,
-        authors: 1 // return only the categories array
+        authors: 1 // return only the authors array
       }
+    },
+    {
+      $limit: 10
     }
   ])
-  return popularAuthors;
+  return popularAuthors[0].authors;
+
 };
 
 module.exports = {
