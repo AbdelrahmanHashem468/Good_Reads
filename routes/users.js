@@ -78,6 +78,13 @@ router.get('/book/', async (req, res, next) => {
     res.status(200).json({data});
 });
 
+router.get('/:id',async (req, res, next) => {
+    const {id}=req.params;
+    const getUser = adminController.getUserById(id);
+    const [error, data] = await asycnWrapper(getUser);
+    if(error) next(error);
+    res.status(200).json({data});  
+})
 //testing ====> get user profile by userID
 router.get('/:id/book/', async (req, res, next) => {
     const { query: { shelf, page, limit} } = req;
