@@ -58,7 +58,7 @@ const getBookByID = async (id, userid) => {
     const book = await Books.findById(id)
         .populate({ path: 'categoryId', select: 'Name' })
         .populate({ path: 'authorId', select: 'firstName lastName' })
-        .populate({ path: 'reviews.userId', select: 'firstName lastName' });
+        .populate({ path: 'reviews.userId', select: 'firstName lastName photo' });
 
     if (!book) {
         throw new BaseError('book not found', 400);
